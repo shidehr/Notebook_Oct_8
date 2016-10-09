@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fcfbea"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Note Title"
+        android:id="@+id/listItemNoteTitle"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:layout_marginBottom="2dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="So this is how our note text should look, it's not pretty but I think it should do"
+        android:id="@+id/listItemNoteBody"
+        android:layout_below="@+id/listItemNoteTitle"
+        android:layout_alignParentLeft="true"
+        android:layout_toEndOf="@+id/listItemNoteTitle"
+        android:ellipsize="end"
+        android:maxLines="1"/>
+</RelativeLayout>
