@@ -78,7 +78,7 @@ public class MainActivityListFragment extends ListFragment {
 
                 notes.clear();
                 notes.addAll(dbAdapter.getAllNotes());
-                noteAdapter.notifyDataSetChanged();
+
                 dbAdapter.close();
         }
         return super.onContextItemSelected(item);

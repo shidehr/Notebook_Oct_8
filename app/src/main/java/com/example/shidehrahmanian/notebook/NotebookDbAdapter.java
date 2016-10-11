@@ -1,5 +1,6 @@
 package com.example.shidehrahmanian.notebook;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by shidehrahmanian on 2016-10-03.
@@ -21,26 +23,21 @@ public class NotebookDbAdapter {
     public static final String COLUMN_ID="_id";
     public static final String COLUMN_TITLE="title";
     public static final String COLUMN_MESSAGE="message";
-    public static final String COLUMN_CATEGORY="category";
-    public static final String COLUMN_DATE="date";
 
-    private String[] allColumns={COLUMN_ID,COLUMN_TITLE,COLUMN_MESSAGE,COLUMN_CATEGORY, COLUMN_DATE};
 
-    public static final String CREATE_TABLE_NOTE="create table " + NOTE_TABLE + " ( "
-            + COLUMN_ID + " integer primary key autoincrement, "
-            + COLUMN_TITLE + " text not null, "
-            + COLUMN_MESSAGE + " text not null, "
-            + COLUMN_CATEGORY + " integer not null "
-            + COLUMN_DATE + ");";
+    private String[] allColumns={COLUMN_ID,COLUMN_TITLE,COLUMN_MESSAGE};
+
+    public static final String CREATE_TABLE_NOTE="create table " + NOTE_TABLE + "("
+            + COLUMN_ID + " integer primary key autoincrement,"
+            + COLUMN_TITLE + " text not null,"
+            + COLUMN_MESSAGE + " text not null," + ")";
 
     private SQLiteDatabase sqlDB;
     private Context context;
 
     private NotebookDbHelper notebookDbHelper;
 
-    public NotebookDbAdapter (Context ctx){
-        context=ctx;
-    }
+    public NotebookDbAdapter (Context ctx){context=ctx;}
 
     public NotebookDbAdapter open() throws android.database.SQLException {
         notebookDbHelper=new NotebookDbHelper(context);
@@ -48,8 +45,32 @@ public class NotebookDbAdapter {
         return this;
     }
 
-    public void close(){
-        notebookDbHelper.close();
+    public void close(){notebookDbHelper.close();}
+
+    public Note createNote(String title, String message){
+        ContentValues values=new ContentValues();
+        values.put(COLUMN_TITLE, title);
+        values.put(COLUMN_MESSAGE, message);
+
+        long insertId = sqlDB.insert(NOTE_TABLE, null, values);
+
+        Cursor cursor= sqlDB.query(NOTE_TABLE, allColumns, COLUMN_ID + "=" + insertId, null, null, null, null);
+
+        cursor.moveToFirst();
+        Note newNote= cursorToNote(cursor);
+        cursor.close();
+        return newNote;
+    }
+    public long deleteNote (long idToDelete){
+        return sqlDB.delete(NOTE_TABLE, COLUMN_ID + "=" + idToDelete, null);
+    }
+
+    public long updateNote (long idToUpdate, String newTitle, String newMessage){
+        ContentValues values=new ContentValues();
+        values.put(COLUMN_TITLE, newTitle);
+        values.put(COLUMN_MESSAGE, newMessage);
+
+        return sqlDB.update(NOTE_TABLE, values, COLUMN_ID + "=" +idToUpdate, null);
     }
 
     public ArrayList<Note> getAllNotes(){
@@ -68,8 +89,8 @@ public class NotebookDbAdapter {
     }
 
     private Note cursorToNote(Cursor cursor){
-        Note newNote=new Note (cursor.getString(1), cursor.getString(2),
-                Note.Category.valueOf(cursor.getString(3)), cursor.getLong(0), cursor.getLong(4));
+        Note newNote=new Note (cursor.getLong(0), cursor.getString(1),
+                cursor.getString(2));
         return newNote;
     }
 

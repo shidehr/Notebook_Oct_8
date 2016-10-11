@@ -74,7 +74,7 @@ public class NoteEditFragment extends Fragment {
 
                 Log.d("Save Note", "Note title:" + title.getText() + "Note message:" + message.getText());
 
-               NotebookDbAdapter dbAdapter=new NotebookDbAdapter(getActivity().getBaseContext());
+                NotebookDbAdapter dbAdapter=new NotebookDbAdapter(getActivity().getBaseContext());
                 dbAdapter.open();
 
                 if (newNote){
@@ -102,5 +102,7 @@ public class NoteEditFragment extends Fragment {
 
         confirmDialogObject=confirmBuilder.create();
     }
+
+
 
 }

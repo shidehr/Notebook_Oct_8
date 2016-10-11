@@ -11,6 +11,7 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by shidehrahmanian on 2016-09-25.
@@ -25,6 +26,7 @@ public class NoteAdapter extends ArrayAdapter<Note> {
 
     public NoteAdapter (Context context, ArrayList<Note> notes){
         super (context, 0, notes);
+
     }
 
 
