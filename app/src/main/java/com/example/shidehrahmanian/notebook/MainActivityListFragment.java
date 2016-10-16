@@ -32,6 +32,8 @@ public class MainActivityListFragment extends ListFragment {
 
         NotebookDbAdapter dbAdapter=new NotebookDbAdapter(getActivity().getBaseContext());
         dbAdapter.open();
+        Log.d("INSIDE LIST FRAG","INSIDE LIST FRAG");
+        Log.d("INSIDE LIST FR" , "CALLING GET ALL NOTES LIST FRAG");
         notes=dbAdapter.getAllNotes();
         dbAdapter.close();
 
@@ -75,10 +77,12 @@ public class MainActivityListFragment extends ListFragment {
                 NotebookDbAdapter dbAdapter=new NotebookDbAdapter(getActivity().getBaseContext());
                 dbAdapter.open();
                 dbAdapter.deleteNote(note.getId());
-
+               Log.d("DELETE =>","delete 1");
                 notes.clear();
+                Log.d("DELETE =>","delete 2");
                 notes.addAll(dbAdapter.getAllNotes());
-
+                Log.d("DELETE =>","delete 3");
+                noteAdapter.notifyDataSetChanged();
                 dbAdapter.close();
         }
         return super.onContextItemSelected(item);

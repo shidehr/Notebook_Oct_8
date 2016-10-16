@@ -16,8 +16,8 @@ import java.util.Calendar;
 
 public class NotebookDbAdapter {
 
-    private static final String DATABASE_NAME = "notebook.db";
-    private static final int DATABASE_VERSION=1;
+    private static final String DATABASE_NAME = "notebookmy.db";
+    private static final int DATABASE_VERSION=2;
 
     public static final String NOTE_TABLE="note";
     public static final String COLUMN_ID="_id";
@@ -29,8 +29,8 @@ public class NotebookDbAdapter {
 
     public static final String CREATE_TABLE_NOTE="create table " + NOTE_TABLE + "("
             + COLUMN_ID + " integer primary key autoincrement,"
-            + COLUMN_TITLE + " text not null,"
-            + COLUMN_MESSAGE + " text not null," + ")";
+            + COLUMN_TITLE + " text not null, "
+            + COLUMN_MESSAGE + " text not null " + ");";
 
     private SQLiteDatabase sqlDB;
     private Context context;
@@ -48,12 +48,13 @@ public class NotebookDbAdapter {
     public void close(){notebookDbHelper.close();}
 
     public Note createNote(String title, String message){
+        Log.d("INSIDE CREATE NOTE","CREATE NOTE");
         ContentValues values=new ContentValues();
         values.put(COLUMN_TITLE, title);
         values.put(COLUMN_MESSAGE, message);
 
         long insertId = sqlDB.insert(NOTE_TABLE, null, values);
-
+        Log.d("INSIDE CREATE insertid =>", insertId +"");
         Cursor cursor= sqlDB.query(NOTE_TABLE, allColumns, COLUMN_ID + "=" + insertId, null, null, null, null);
 
         cursor.moveToFirst();
@@ -62,7 +63,7 @@ public class NotebookDbAdapter {
         return newNote;
     }
     public long deleteNote (long idToDelete){
-        return sqlDB.delete(NOTE_TABLE, COLUMN_ID + "=" + idToDelete, null);
+        return sqlDB.delete(NOTE_TABLE, COLUMN_ID + " = " + idToDelete, null);
     }
 
     public long updateNote (long idToUpdate, String newTitle, String newMessage){
@@ -75,10 +76,11 @@ public class NotebookDbAdapter {
 
     public ArrayList<Note> getAllNotes(){
         ArrayList<Note> notes= new ArrayList<Note>();
-
+          Log.d("INSIDE GETALLL","INSIDE GETALLL");
         Cursor cursor=sqlDB.query(NOTE_TABLE, allColumns, null, null, null, null, null);
 
         for(cursor.moveToLast(); !cursor.isBeforeFirst(); cursor.moveToPrevious()){
+             Log.d("INSIDE NOTEDB ADP", "INSIDE GET ALL NOTES");
             Note note=cursorToNote(cursor);
             notes.add(note);
         }
@@ -89,8 +91,13 @@ public class NotebookDbAdapter {
     }
 
     private Note cursorToNote(Cursor cursor){
+            Log.d("INSIDE Cursor to note","getting vakue");
+        Log.d("INSIDE Cursor to note",cursor.getString(2));
+
         Note newNote=new Note (cursor.getLong(0), cursor.getString(1),
                 cursor.getString(2));
+        Log.d("INSIDE Cursor to note","PASSED");
+        Log.d("INSIDE Cursor to note",cursor.getLong(0)+""+cursor.getString(1)+cursor.getString(2));
         return newNote;
     }
 

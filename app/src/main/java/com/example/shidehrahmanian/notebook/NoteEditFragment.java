@@ -3,7 +3,12 @@ package com.example.shidehrahmanian.notebook;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -12,8 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import static android.R.attr.button;
+import static android.app.Activity.RESULT_OK;
 
 
 /**
@@ -24,8 +33,7 @@ public class NoteEditFragment extends Fragment {
     private AlertDialog confirmDialogObject;
     private boolean newNote = false;
     private long noteId=0;
-
-
+    private static int RESULT_LOAD_IMG=1;
 
 
     public NoteEditFragment() {
@@ -42,6 +50,7 @@ public class NoteEditFragment extends Fragment {
         title= (EditText) fragmentLayout.findViewById(R.id.editNoteTitle);
         message=(EditText) fragmentLayout.findViewById(R.id.editNoteMessage);
         Button savedButton= (Button) fragmentLayout.findViewById(R.id.saveNote);
+        ImageButton photoButton= (ImageButton) fragmentLayout.findViewById(R.id.editNoteAddPhoto);
 
         Intent intent=getActivity().getIntent();
         title.setText(intent.getExtras().getString(MainActivity.NOTE_TITLE_EXTRA, ""));
@@ -58,9 +67,44 @@ public class NoteEditFragment extends Fragment {
         });
 
 
-
       return fragmentLayout;
 
+    }
+
+    public void loadImageFromGallery(View view){
+        Intent galleryIntent=new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            if (requestCode==RESULT_LOAD_IMG && resultCode==RESULT_OK && data!=null){
+                Uri selectedImage=data.getData();
+
+                String[]filePathColumn={MediaStore.Images.Media.DATA};
+
+                Cursor cursor=getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+
+                cursor.moveToFirst();
+
+                int columnIndex=cursor.getColumnIndex(filePathColumn[0]);
+
+                imgDecodableString=cursor.getString(columnIndex);
+                cursor.close();
+
+                ImageView imgView=(ImageView).findViewById(R.id.imgView);
+
+                imgView.setImageBitmap(BitmapFactory.decodeFile(imgDecodableString));
+            } else {
+                Toast toast=Toast.makeText(this, "You haven't picked an image", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void buildConfirmDialog (){
@@ -76,12 +120,14 @@ public class NoteEditFragment extends Fragment {
 
                 NotebookDbAdapter dbAdapter=new NotebookDbAdapter(getActivity().getBaseContext());
                 dbAdapter.open();
-
+  //              dbAdapter.createNote(title.getText() + "", message.getText() + "");
+  Log.d("INSIDE new Note =>",newNote+"");
                 if (newNote){
                     dbAdapter.createNote(title.getText() + "", message.getText() + "");
 
                 }else {
-                    dbAdapter.updateNote(noteId, title.getText() + "", message.getText() + "");
+                    dbAdapter.createNote(title.getText() + "", message.getText() + "");
+                 //   dbAdapter.updateNote(noteId, title.getText() + "", message.getText() + "");
 
                 }
 
